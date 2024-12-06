@@ -16,6 +16,7 @@ async function sendToTelegramWithButtons(message, keyboard) {
     await axios.post(url, {
       chat_id: CHAT_ID,
       text: message,
+      parse_mode: 'MarkdownV2', // Используйте MarkdownV2
       reply_markup: {
         keyboard: keyboard,
         resize_keyboard: true,
@@ -82,8 +83,9 @@ ws.on('message', (data) => {
 
   // Если рост цены превышает порог, отправить уведомление с кнопками
   if (priceChangePercent >= PRICE_CHANGE_THRESHOLD) {
-    const message = `🚀 Монета ${symbol} выросла на ${priceChangePercent.toFixed(2)}%. Текущая цена: ${currentPrice}`;
-    sendToTelegramWithButtons(message, [
+    const message = `Binance\n🟢Long ${symbol}\nЦена ${currentPrice.toFixed(6)}\nПроцент изменился на ${priceChangePercent.toFixed(2)}%\n[inline URL](http://www.example.com/)`; // Убедитесь, что ссылка экранирована
+    const escapedMessage = message.replace(/\./g, '\\.');
+    sendToTelegramWithButtons(escapedMessage, [
       [{ text: 'Биржа' }, { text: 'Настройки' }],
     ]);
 
