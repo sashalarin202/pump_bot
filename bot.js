@@ -90,7 +90,7 @@ ws.on('message', (data) => {
   // Если рост цены превышает порог, отправить уведомление с кнопками
   if (priceChangePercent >= PRICE_CHANGE_THRESHOLD) {
     // Формирование URL для пары на Binance
-    const url = `https://www.binance.com/en/trade/${symbol.slice(0, 3)}_${symbol.slice(3)}`;
+    const url = `https://www.binance.com/en/trade/${symbol.slice(0, 3)}${symbol.slice(3).replace('_', '')}`;
     
     // Формирование сообщения с гиперссылкой на Binance
     const message = `Binance\n🟢Long ${symbol}\nЦена ${currentPrice.toFixed(6)}\nПроцент изменился на ${priceChangePercent.toFixed(2)}%\n[Перейти на Binance](${url})`;
