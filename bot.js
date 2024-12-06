@@ -69,6 +69,12 @@ ws.on('message', (data) => {
   const ticker = JSON.parse(data);
 
   const symbol = ticker.s; // Символ монеты (например, BTCUSDT)
+  
+  // Фильтруем только те монеты, которые торгуются с USDT
+  if (!symbol.endsWith('USDT')) {
+    return; // Пропустить символы, не имеющие пары с USDT
+  }
+
   const currentPrice = parseFloat(ticker.c); // Текущая цена монеты
 
   // Если начальная цена не задана, установить её
@@ -83,7 +89,11 @@ ws.on('message', (data) => {
 
   // Если рост цены превышает порог, отправить уведомление с кнопками
   if (priceChangePercent >= PRICE_CHANGE_THRESHOLD) {
-    const message = `Binance\n🟢Long ${symbol}\nЦена ${currentPrice.toFixed(6)}\nПроцент изменился на ${priceChangePercent.toFixed(2)}%\n[inline URL](http://www.example.com/)`; // Убедитесь, что ссылка экранирована
+    // Формирование URL для пары на Binance
+    const url = `https://www.binance.com/en/trade/${symbol.slice(0, 3)}_${symbol.slice(3)}`;
+    
+    // Формирование сообщения с гиперссылкой на Binance
+    const message = `Binance\n🟢Long ${symbol}\nЦена ${currentPrice.toFixed(6)}\nПроцент изменился на ${priceChangePercent.toFixed(2)}%\n[Перейти на Binance](${url})`;
     const escapedMessage = message.replace(/\./g, '\\.');
     sendToTelegramWithButtons(escapedMessage, [
       [{ text: 'Биржа' }, { text: 'Настройки' }],
