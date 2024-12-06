@@ -55,7 +55,7 @@ async function handleButtonPress(text) {
     await sendStartMessage();
   } else if (text.endsWith('%')) {
     PRICE_CHANGE_THRESHOLD = parseInt(text);
-    await sendToTelegramWithButtons(`Порог изменения цены установлен на ${PRICE_CHANGE_THRESHOLD}%.`, [
+    await sendToTelegramWithButtons(`Порог изменения цены установлен на ${PRICE_CHANGE_THRESHOLD}%`, [
       [{ text: 'Биржа' }, { text: 'Настройки' }],
     ]);
   }
