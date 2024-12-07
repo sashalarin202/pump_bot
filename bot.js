@@ -1,6 +1,5 @@
 const WebSocket = require('ws');
 const axios = require('axios');
-const telegramBot = require('node-telegram-bot-api');
 
 // Настройки Telegram
 const TELEGRAM_TOKEN = '8087924083:AAEPsBIU4QEuW1hv2mQkc-b8EP7H8Qe0FL0';
@@ -30,16 +29,6 @@ async function sendToTelegramWithButtons(message, keyboard) {
   } catch (error) {
     console.error('Ошибка отправки сообщения с кнопками в Telegram:', error.response ? error.response.data.description : error.message);
   }
-}
-
-// Отправка панели настроек с процентами 1-9%
-async function sendSettings() {
-  const keyboard = [];
-  for (let i = 1; i <= 9; i++) {
-    keyboard.push([{ text: `${i}%` }]);
-  }
-  keyboard.push([{ text: 'Назад' }]);
-  await sendToTelegramWithButtons('Выберите порог изменения цены:', keyboard);
 }
 
 // Получение исторической цены для монеты на выбранный момент времени (например, 2 года назад)
@@ -123,18 +112,3 @@ ws.on('close', () => {
   }, 1000);
 });
 
-// Обработка сообщений от пользователя (например, через Telegram API)
-const bot = new telegramBot(TELEGRAM_TOKEN, { polling: true });
-
-bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  console.log('Получена команда /start от пользователя:', chatId);
-  sendStartMessage();
-});
-
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-  const text = msg.text;
-  console.log(`Получено сообщение от пользователя: ${text}`);
-  handleButtonPress(text);
-});
