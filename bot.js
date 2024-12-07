@@ -7,10 +7,9 @@ const TELEGRAM_TOKEN = '8087924083:AAEPsBIU4QEuW1hv2mQkc-b8EP7H8Qe0FL0';
 const CHAT_ID = '440662174';
 
 // Хранилище цен и временных меток
-const historicalPrices = {}; // Храним исторические цены с моментом времени (например, 2 года назад)
-
-let PRICE_CHANGE_THRESHOLD = 4; // Начальный порог
-let HISTORY_PERIOD =  60 * 60 * 1000; // 15 минут
+const historicalPrices = {};
+let PRICE_CHANGE_THRESHOLD = 4;
+let HISTORY_PERIOD = 60 * 60 * 1000; // 1 час
 
 // Функция для отправки сообщения с кнопками в Telegram
 async function sendToTelegramWithButtons(message, keyboard) {
@@ -20,7 +19,7 @@ async function sendToTelegramWithButtons(message, keyboard) {
     await axios.post(url, {
       chat_id: CHAT_ID,
       text: message,
-      parse_mode: 'MarkdownV2', // Используйте MarkdownV2
+      parse_mode: 'MarkdownV2',
       reply_markup: {
         keyboard: keyboard,
         resize_keyboard: true,
@@ -33,15 +32,6 @@ async function sendToTelegramWithButtons(message, keyboard) {
   }
 }
 
-// Обработка команды /start и отправка кнопок "Биржа" и "Настройки"
-async function sendStartMessage() {
-  console.log('Отправка сообщения с кнопками "Биржа" и "Настройки"');
-  const keyboard = [
-    [{ text: 'Биржа' }, { text: 'Настройки' }],
-  ];
-  await sendToTelegramWithButtons('Добро пожаловать! Выберите действие:', keyboard);
-}
-
 // Отправка панели настроек с процентами 1-9%
 async function sendSettings() {
   const keyboard = [];
@@ -50,22 +40,6 @@ async function sendSettings() {
   }
   keyboard.push([{ text: 'Назад' }]);
   await sendToTelegramWithButtons('Выберите порог изменения цены:', keyboard);
-}
-
-// Обработка нажатий на кнопки и установка порога
-async function handleButtonPress(text) {
-  console.log(`Получена команда: ${text}`);
-  if (text === 'Настройки') {
-    await sendSettings();
-  } else if (text === 'Назад') {
-    await sendStartMessage();
-  } else if (text.endsWith('%')) {
-    PRICE_CHANGE_THRESHOLD = parseInt(text);
-    console.log(`Порог изменения цены установлен на ${PRICE_CHANGE_THRESHOLD}%`);
-    await sendToTelegramWithButtons(`Порог изменения цены установлен на ${PRICE_CHANGE_THRESHOLD}%`, [
-      [{ text: 'Биржа' }, { text: 'Настройки' }],
-    ]);
-  }
 }
 
 // Получение исторической цены для монеты на выбранный момент времени (например, 2 года назад)
@@ -128,7 +102,7 @@ ws.on('message', (data) => {
           const message = `Binance\n🟢Long ${symbol}\nЦена ${currentPrice.toFixed(6)}\nПроцент изменился на ${priceChangePercent.toFixed(2)}%\n[Перейти на Binance](${url})`;
           const escapedMessage = message.replace(/\./g, '\\.');
           sendToTelegramWithButtons(escapedMessage, [
-            [{ text: 'Биржа' }, { text: 'Настройки' }],
+            [{ text: 'Период' }, { text: 'GAP' }],
           ]);
         }
       }
